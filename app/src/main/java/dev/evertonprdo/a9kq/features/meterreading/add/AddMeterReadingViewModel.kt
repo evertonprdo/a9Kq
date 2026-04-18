@@ -7,15 +7,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import dev.evertonprdo.a9kq.data.old.EnergyRepository
 import dev.evertonprdo.a9kq.di.ServiceLocator
+import dev.evertonprdo.a9kq.domain.entities.MeterReading
+import dev.evertonprdo.a9kq.domain.usecases.ReadMeterUseCase
 import dev.evertonprdo.a9kq.libs.KWh
-import dev.evertonprdo.a9kq.domain.old.EnergyRecord
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
-class AddEnergyViewModel(
-    private val energyRepository: EnergyRepository
+class AddMeterReadingViewModel(
+    private val readMeterUseCase: ReadMeterUseCase
 ) : ViewModel() {
 
     var amount by mutableStateOf<Int?>(null)
@@ -28,24 +28,27 @@ class AddEnergyViewModel(
 
     fun submit() {
         val newRecord = amount ?: return
-        val kWh = KWh(newRecord)
 
-        val record = EnergyRecord(
-            instant = Clock.System.now(),
-            amount = kWh
+        val read = MeterReading(
+            readAt = Clock.System.now(),
+            meterIndex = KWh(newRecord)
         )
 
         viewModelScope.launch {
-            energyRepository.addRecord(record)
+            readMeterUseCase(read)
         }
     }
 
     companion object {
         val factory = viewModelFactory {
 
+            val readMeterUseCase = ReadMeterUseCase(
+                meterReadingRepository = ServiceLocator.meterReadingRepository
+            )
+
             initializer {
-                AddEnergyViewModel(
-                    energyRepository = ServiceLocator.energyRepository
+                AddMeterReadingViewModel(
+                    readMeterUseCase = readMeterUseCase
                 )
             }
         }

@@ -27,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun AddEnergyScreen(
-    viewModel: AddEnergyViewModel = viewModel(factory = AddEnergyViewModel.factory),
+fun AddMeterReadingScreen(
+    viewModel: AddMeterReadingViewModel = viewModel(factory = AddMeterReadingViewModel.factory),
     onSubmit: () -> Unit
 ) {
     fun handleOnSubmit() {

@@ -1,10 +1,9 @@
 package dev.evertonprdo.a9kq.domain.entities
 
 import dev.evertonprdo.a9kq.libs.KWh
-import kotlinx.datetime.LocalDate
+import kotlin.time.Instant
 
 data class MeterReading(
-    val id: Int,
-    val readAt: LocalDate,
+    val readAt: Instant,
     val meterIndex: KWh
 )

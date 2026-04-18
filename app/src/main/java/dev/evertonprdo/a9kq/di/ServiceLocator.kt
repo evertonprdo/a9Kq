@@ -5,16 +5,23 @@ import androidx.datastore.core.DataStore
 import androidx.room.Room
 import dev.evertonprdo.a9kq.data.old.BillRepository
 import dev.evertonprdo.a9kq.data.old.EnergyDataSource
-import dev.evertonprdo.a9kq.data.old.EnergyRepository
 import dev.evertonprdo.a9kq.data.old.energyDataSource
 import dev.evertonprdo.a9kq.data.room.AppDatabase
+import dev.evertonprdo.a9kq.data.room.mappers.MeterReadingMapper
+import dev.evertonprdo.a9kq.data.room.repository.MeterReadingRepositoryImpl
+import dev.evertonprdo.a9kq.domain.repositories.MeterReadingRepository
 
 object ServiceLocator {
 
     private lateinit var energyDataSource: DataStore<EnergyDataSource>
     private lateinit var database: AppDatabase
 
-    val energyRepository: EnergyRepository by lazy { EnergyRepository(energyDataSource) }
+    val meterReadingRepository: MeterReadingRepository by lazy {
+        MeterReadingRepositoryImpl(
+            meterReadingDao = database.meterReadingDao(),
+            meterReadingMapper = MeterReadingMapper()
+        )
+    }
     val billRepository: BillRepository by lazy { BillRepository(energyDataSource) }
 
     fun initialize(context: Context) {

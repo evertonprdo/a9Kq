@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "meter_reading")
 data class MeterReading(
-    @PrimaryKey val id: Int,
-    @ColumnInfo(name = "read_at") val readAt: Long,
+    @PrimaryKey @ColumnInfo(name = "read_at") val readAt: Long,
     @ColumnInfo(name = "meter_index") val meterIndex: Long
 )

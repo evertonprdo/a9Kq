@@ -33,11 +33,11 @@ import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
 
 @Composable
-fun ListEnergyScreen(
-    viewModel: EnergyListViewModel = viewModel(factory = EnergyListViewModel.factory),
+fun MeterReadingListScreen(
+    viewModel: MeterReadingListViewModel = viewModel(factory = MeterReadingListViewModel.factory),
     onRequestAddRecord: () -> Unit
 ) {
-    val records by viewModel.records.collectAsStateWithLifecycle()
+    val readings by viewModel.meterReadings.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -64,9 +64,9 @@ fun ListEnergyScreen(
                 )
             }
 
-            items(items = records, key = { it.instant }) { item ->
-                val instant = item.instant
-                val local = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+            items(items = readings, key = { it.readAt }) { item ->
+                val readAt = item.readAt
+                val local = readAt.toLocalDateTime(TimeZone.currentSystemDefault())
                 val formatted = "%02d/%02d at %02dh%02d".format(
                     local.month.number,
                     local.day,
@@ -101,7 +101,7 @@ fun ListEnergyScreen(
                         }
 
                         Text(
-                            text = item.amount.toString(),
+                            text = item.meterIndex.toString(),
                             fontWeight = FontWeight.Medium,
                             style = MaterialTheme.typography.titleLarge,
                         )

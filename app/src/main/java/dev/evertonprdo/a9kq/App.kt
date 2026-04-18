@@ -19,8 +19,8 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.evertonprdo.a9kq.features.billing.add.AddBillScreen
 import dev.evertonprdo.a9kq.features.billing.list.BillListScreen
-import dev.evertonprdo.a9kq.features.meterreading.add.AddEnergyScreen
-import dev.evertonprdo.a9kq.features.meterreading.list.ListEnergyScreen
+import dev.evertonprdo.a9kq.features.meterreading.add.AddMeterReadingScreen
+import dev.evertonprdo.a9kq.features.meterreading.list.MeterReadingListScreen
 
 @Composable
 fun App() {
@@ -52,8 +52,8 @@ fun App() {
                     }
                 }
 
-                "/records" -> NavEntry(key) { ListEnergyScreen { backStack.add("/record/add") } }
-                "/record/add" -> NavEntry(key) { AddEnergyScreen { backStack.removeLastOrNull() } }
+                "/records" -> NavEntry(key) { MeterReadingListScreen { backStack.add("/record/add") } }
+                "/record/add" -> NavEntry(key) { AddMeterReadingScreen { backStack.removeLastOrNull() } }
                 "/bills" -> NavEntry(key) { BillListScreen { backStack.add("/bill/add") } }
                 "/bill/add" -> NavEntry(key) { AddBillScreen { backStack.removeLastOrNull() } }
 
