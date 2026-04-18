@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.lib.numericvt
+package dev.evertonprdo.a9kq.libs.numericvt
 
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.buildAnnotatedString

@@ -1,7 +1,7 @@
-package dev.evertonprdo.a9kq.data
+package dev.evertonprdo.a9kq.data.old
 
 import androidx.datastore.core.DataStore
-import dev.evertonprdo.a9kq.model.Bill
+import dev.evertonprdo.a9kq.domain.old.Bill
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

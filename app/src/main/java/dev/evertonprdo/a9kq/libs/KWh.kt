@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.lib
+package dev.evertonprdo.a9kq.libs
 
 import kotlinx.serialization.Serializable
 
@@ -16,6 +16,6 @@ value class KWh(val value: Int) : Comparable<KWh> {
     operator fun times(scalar: Double) = KWh((this.value * scalar).toInt())
     operator fun div(scalar: Int) = KWh(this.value / scalar)
     operator fun div(scalar: Double) = KWh((this.value / scalar).toInt())
-    operator fun times(money: Money) = Money(this.value * money.cents)
+    operator fun times(BRLMoney: BRLMoney) = BRLMoney(this.value * BRLMoney.cents)
     operator fun unaryMinus() = KWh(-value)
 }

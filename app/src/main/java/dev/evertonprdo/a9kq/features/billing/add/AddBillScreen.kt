@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.features.bill.add
+package dev.evertonprdo.a9kq.features.billing.add
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import dev.evertonprdo.a9kq.lib.numericvt.NumericVisualTransformation
+import dev.evertonprdo.a9kq.libs.numericvt.NumericVisualTransformation
 
 @Composable
 fun AddBillScreen(

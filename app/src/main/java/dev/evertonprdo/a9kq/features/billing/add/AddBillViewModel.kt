@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.features.bill.add
+package dev.evertonprdo.a9kq.features.billing.add
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -9,11 +9,11 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import dev.evertonprdo.a9kq.data.BillRepository
+import dev.evertonprdo.a9kq.data.old.BillRepository
 import dev.evertonprdo.a9kq.di.ServiceLocator
-import dev.evertonprdo.a9kq.lib.KWh
-import dev.evertonprdo.a9kq.lib.Money
-import dev.evertonprdo.a9kq.model.Bill
+import dev.evertonprdo.a9kq.libs.BRLMoney
+import dev.evertonprdo.a9kq.libs.KWh
+import dev.evertonprdo.a9kq.domain.old.Bill
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
@@ -42,7 +42,7 @@ class AddBillViewModel(private val repository: BillRepository) : ViewModel() {
             currRead = LocalDate.parse(currRead),
             nextRead = LocalDate.parse(nextRead),
             amount = KWh(amount.toInt()),
-            total = Money(total.toLong())
+            total = BRLMoney(total.toLong())
         )
 
         viewModelScope.launch {

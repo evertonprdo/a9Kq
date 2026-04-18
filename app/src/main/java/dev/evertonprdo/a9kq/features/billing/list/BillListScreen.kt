@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.features.bill.list
+package dev.evertonprdo.a9kq.features.billing.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

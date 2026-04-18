@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.features.energy.list
+package dev.evertonprdo.a9kq.features.meterreading.list
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

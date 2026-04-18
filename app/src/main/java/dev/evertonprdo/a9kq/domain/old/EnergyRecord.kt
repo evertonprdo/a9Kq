@@ -1,6 +1,6 @@
-package dev.evertonprdo.a9kq.model
+package dev.evertonprdo.a9kq.domain.old
 
-import dev.evertonprdo.a9kq.lib.KWh
+import dev.evertonprdo.a9kq.libs.KWh
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 

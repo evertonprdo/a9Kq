@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.lib.numericvt
+package dev.evertonprdo.a9kq.libs.numericvt
 
 class NumberFormatter(
     val decimalLength: Int = 2,

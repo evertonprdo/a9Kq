@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.features.bill.list
+package dev.evertonprdo.a9kq.features.billing.list
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import dev.evertonprdo.a9kq.data.BillRepository
+import dev.evertonprdo.a9kq.data.old.BillRepository
 import dev.evertonprdo.a9kq.di.ServiceLocator
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn

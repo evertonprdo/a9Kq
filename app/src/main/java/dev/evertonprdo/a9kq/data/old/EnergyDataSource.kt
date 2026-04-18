@@ -1,12 +1,12 @@
-package dev.evertonprdo.a9kq.data
+package dev.evertonprdo.a9kq.data.old
 
 import android.content.Context
 import androidx.datastore.core.CorruptionException
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.Serializer
 import androidx.datastore.dataStore
-import dev.evertonprdo.a9kq.model.Bill
-import dev.evertonprdo.a9kq.model.EnergyRecord
+import dev.evertonprdo.a9kq.domain.old.Bill
+import dev.evertonprdo.a9kq.domain.old.EnergyRecord
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable

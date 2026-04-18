@@ -1,7 +1,7 @@
-package dev.evertonprdo.a9kq.model
+package dev.evertonprdo.a9kq.domain.old
 
-import dev.evertonprdo.a9kq.lib.KWh
-import dev.evertonprdo.a9kq.lib.Money
+import dev.evertonprdo.a9kq.libs.BRLMoney
+import dev.evertonprdo.a9kq.libs.KWh
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
@@ -10,5 +10,5 @@ data class Bill(
     val currRead: LocalDate,
     val nextRead: LocalDate,
     val amount: KWh,
-    val total: Money
+    val total: BRLMoney
 )

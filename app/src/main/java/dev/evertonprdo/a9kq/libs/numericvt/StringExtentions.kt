@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.lib.numericvt
+package dev.evertonprdo.a9kq.libs.numericvt
 
 fun String.splitAt(char: Char): Pair<String, String> {
     val substrings = split(char)

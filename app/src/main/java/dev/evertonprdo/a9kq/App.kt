@@ -17,10 +17,10 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import dev.evertonprdo.a9kq.features.bill.add.AddBillScreen
-import dev.evertonprdo.a9kq.features.bill.list.BillListScreen
-import dev.evertonprdo.a9kq.features.energy.add.AddEnergyScreen
-import dev.evertonprdo.a9kq.features.energy.list.ListEnergyScreen
+import dev.evertonprdo.a9kq.features.billing.add.AddBillScreen
+import dev.evertonprdo.a9kq.features.billing.list.BillListScreen
+import dev.evertonprdo.a9kq.features.meterreading.add.AddEnergyScreen
+import dev.evertonprdo.a9kq.features.meterreading.list.ListEnergyScreen
 
 @Composable
 fun App() {

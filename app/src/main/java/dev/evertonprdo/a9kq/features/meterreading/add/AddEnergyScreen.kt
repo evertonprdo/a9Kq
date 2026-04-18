@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.features.energy.add
+package dev.evertonprdo.a9kq.features.meterreading.add
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
