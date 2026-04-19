@@ -13,6 +13,9 @@ interface MeterReadingDao {
     @Query("SELECT * FROM meter_reading")
     fun getAll(): Flow<List<MeterReading>>
 
+    @Query("SELECT * FROM meter_reading ORDER BY read_at DESC")
+    fun getAllByReadAtDesc(): Flow<List<MeterReading>>
+
     @Query("SELECT * FROM meter_reading ORDER BY read_at DESC LIMIT 1")
     suspend fun getMostRecent(): MeterReading?
 
