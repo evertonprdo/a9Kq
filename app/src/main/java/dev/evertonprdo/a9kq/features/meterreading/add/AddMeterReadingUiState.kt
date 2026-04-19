@@ -1,6 +1,6 @@
 package dev.evertonprdo.a9kq.features.meterreading.add
 
-data class AddMeterUiState(
+data class AddMeterReadingUiState(
     val meterIndex: Int? = null,
     val submissionState: Submission = Submission.Idle,
 ) {

@@ -10,11 +10,10 @@ import dev.evertonprdo.a9kq.di.ServiceLocator
 import dev.evertonprdo.a9kq.domain.entities.MeterReading
 import dev.evertonprdo.a9kq.domain.usecases.ReadMeterUseCase
 import dev.evertonprdo.a9kq.libs.KWh
-import kotlinx.coroutines.channels.Channel
+import dev.evertonprdo.a9kq.libs.utils.Signaler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
@@ -23,11 +22,10 @@ class AddMeterReadingViewModel(
     private val readMeterUseCase: ReadMeterUseCase,
 ) : ViewModel() {
 
-    private val _uiState: MutableStateFlow<AddMeterUiState> = MutableStateFlow(AddMeterUiState())
+    private val _uiState: MutableStateFlow<AddMeterReadingUiState> =
+        MutableStateFlow(AddMeterReadingUiState())
     val uiState = _uiState.asStateFlow()
-
-    private val _events = Channel<AddMeterReadingEvent>()
-    val events = _events.receiveAsFlow()
+    val successSignaler = Signaler()
 
     fun onAction(action: AddMeterReadingAction) {
         when (action) {
@@ -53,21 +51,21 @@ class AddMeterReadingViewModel(
         )
 
         viewModelScope.launch {
-            _uiState.update { it.copy(submissionState = AddMeterUiState.toSubmitting()) }
+            _uiState.update { it.copy(submissionState = AddMeterReadingUiState.toSubmitting()) }
             delay(2000)
 
             try {
                 readMeterUseCase(read)
                 dismissDialog()
-                _events.send(AddMeterReadingEvent.Submitted)
+                successSignaler.signal()
             } catch (e: Exception) {
-                _uiState.update { it.copy(submissionState = AddMeterUiState.toFailure(e)) }
+                _uiState.update { it.copy(submissionState = AddMeterReadingUiState.toFailure(e)) }
             }
         }
     }
 
     private fun dismissDialog() =
-        _uiState.update { it.copy(submissionState = AddMeterUiState.toIdle()) }
+        _uiState.update { it.copy(submissionState = AddMeterReadingUiState.toIdle()) }
 
     companion object {
         private val Factory = viewModelFactory {

@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.evertonprdo.a9kq.libs.utils.onSignal
 import dev.evertonprdo.a9kq.libs.utils.toDp
 import dev.evertonprdo.a9kq.ui.theme.Theme
 
@@ -40,13 +41,8 @@ fun AddMeterReadingScreen(
     viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) {
-        viewModel.events.collect { e ->
-            if (e is AddMeterReadingEvent.Submitted)
-                onSubmit()
-        }
-    }
-    
+    LaunchedEffect(Unit) { viewModel.successSignaler.onSignal(onSubmit) }
+
     Content(
         uiState = uiState,
         onAction = viewModel::onAction
@@ -55,7 +51,7 @@ fun AddMeterReadingScreen(
 
 @Composable
 private fun Content(
-    uiState: AddMeterUiState,
+    uiState: AddMeterReadingUiState,
     onAction: (AddMeterReadingAction) -> Unit
 ) {
     val submitting = uiState.submissionState
@@ -82,7 +78,7 @@ private fun Content(
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
             ) {
-                if (submitting is AddMeterUiState.Submission.Idle)
+                if (submitting is AddMeterReadingUiState.Submission.Idle)
                     Text("Submit")
                 else
                     CircularProgressIndicator(
@@ -93,7 +89,7 @@ private fun Content(
         }
     }
 
-    if (submitting is AddMeterUiState.Submission.Failure)
+    if (submitting is AddMeterReadingUiState.Submission.Failure)
         AlertDialog(
             onDismissRequest = onDismissRequest,
             confirmButton = { TextButton(onDismissRequest) { Text("Confirm") } },
@@ -140,7 +136,7 @@ fun UIntTextField(
 private fun AddMeterReadingScreenPreview() {
     Theme() {
         Content(
-            uiState = AddMeterUiState(),
+            uiState = AddMeterReadingUiState(),
             onAction = {}
         )
     }
@@ -151,7 +147,7 @@ private fun AddMeterReadingScreenPreview() {
 private fun FilledAddMeterReadingScreenPreview() {
     Theme() {
         Content(
-            uiState = AddMeterUiState(2250),
+            uiState = AddMeterReadingUiState(2250),
             onAction = {}
         )
     }
@@ -162,9 +158,9 @@ private fun FilledAddMeterReadingScreenPreview() {
 private fun SubmittingAddMeterReadingScreenPreview() {
     Theme() {
         Content(
-            uiState = AddMeterUiState(
+            uiState = AddMeterReadingUiState(
                 meterIndex = 2250,
-                submissionState = AddMeterUiState.toSubmitting()
+                submissionState = AddMeterReadingUiState.toSubmitting()
             ),
             onAction = {}
         )
