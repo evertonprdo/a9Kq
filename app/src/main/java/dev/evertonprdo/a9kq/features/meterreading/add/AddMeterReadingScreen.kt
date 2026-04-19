@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,9 +37,16 @@ import dev.evertonprdo.a9kq.ui.theme.Theme
 @Composable
 fun AddMeterReadingScreen(
     onSubmit: () -> Unit,
-    viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create(onSubmit)
+    viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.events.collect { e ->
+            if (e is AddMeterReadingEvent.Submitted)
+                onSubmit()
+        }
+    }
+    
     Content(
         uiState = uiState,
         onAction = viewModel::onAction
@@ -48,11 +56,11 @@ fun AddMeterReadingScreen(
 @Composable
 private fun Content(
     uiState: AddMeterUiState,
-    onAction: (AddMeterAction) -> Unit
+    onAction: (AddMeterReadingAction) -> Unit
 ) {
     val submitting = uiState.submissionState
     val canBeSubmitted = uiState.canBeSubmitted
-    val onDismissRequest = { onAction(AddMeterAction.DismissDialog) }
+    val onDismissRequest = { onAction(AddMeterReadingAction.DismissDialog) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -65,11 +73,11 @@ private fun Content(
         ) {
             UIntTextField(
                 value = uiState.meterIndex,
-                onValueChange = { onAction(AddMeterAction.OnMeterIndexChange(it)) }
+                onValueChange = { onAction(AddMeterReadingAction.OnMeterReadingIndexChange(it)) }
             )
 
             Button(
-                onClick = { onAction(AddMeterAction.Submit) },
+                onClick = { onAction(AddMeterReadingAction.Submit) },
                 enabled = canBeSubmitted,
                 modifier = Modifier
                     .fillMaxWidth(0.75f)

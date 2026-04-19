@@ -10,37 +10,41 @@ import dev.evertonprdo.a9kq.di.ServiceLocator
 import dev.evertonprdo.a9kq.domain.entities.MeterReading
 import dev.evertonprdo.a9kq.domain.usecases.ReadMeterUseCase
 import dev.evertonprdo.a9kq.libs.KWh
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
 class AddMeterReadingViewModel(
     private val readMeterUseCase: ReadMeterUseCase,
-    private val onSubmit: () -> Unit
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AddMeterUiState> = MutableStateFlow(AddMeterUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun onAction(action: AddMeterAction) {
+    private val _events = Channel<AddMeterReadingEvent>()
+    val events = _events.receiveAsFlow()
+
+    fun onAction(action: AddMeterReadingAction) {
         when (action) {
-            AddMeterAction.DismissDialog -> dismissDialog()
-            is AddMeterAction.OnMeterIndexChange -> {
+            AddMeterReadingAction.DismissDialog -> dismissDialog()
+            is AddMeterReadingAction.OnMeterReadingIndexChange -> {
                 updateMeterIndex(action.value)
             }
 
-            AddMeterAction.Submit -> submit()
+            AddMeterReadingAction.Submit -> submit()
         }
     }
 
-    fun updateMeterIndex(value: Int?) {
+    private fun updateMeterIndex(value: Int?) {
         _uiState.update { it.copy(meterIndex = value) }
     }
 
-    fun submit() {
+    private fun submit() {
         val newRecord = uiState.value.meterIndex ?: return
 
         val read = MeterReading(
@@ -55,17 +59,18 @@ class AddMeterReadingViewModel(
             try {
                 readMeterUseCase(read)
                 dismissDialog()
-                onSubmit()
+                _events.send(AddMeterReadingEvent.Submitted)
             } catch (e: Exception) {
                 _uiState.update { it.copy(submissionState = AddMeterUiState.toFailure(e)) }
             }
         }
     }
 
-    fun dismissDialog() = _uiState.update { it.copy(submissionState = AddMeterUiState.toIdle()) }
+    private fun dismissDialog() =
+        _uiState.update { it.copy(submissionState = AddMeterUiState.toIdle()) }
 
     companion object {
-        private fun factory(onSubmit: () -> Unit) = viewModelFactory {
+        private val Factory = viewModelFactory {
 
             val readMeterUseCase = ReadMeterUseCase(
                 meterReadingRepository = ServiceLocator.meterReadingRepository
@@ -74,13 +79,11 @@ class AddMeterReadingViewModel(
             initializer {
                 AddMeterReadingViewModel(
                     readMeterUseCase = readMeterUseCase,
-                    onSubmit = onSubmit
                 )
             }
         }
 
         @Composable
-        fun create(onSubmit: () -> Unit) =
-            viewModel<AddMeterReadingViewModel>(factory = factory(onSubmit))
+        fun create() = viewModel<AddMeterReadingViewModel>(factory = Factory)
     }
 }
