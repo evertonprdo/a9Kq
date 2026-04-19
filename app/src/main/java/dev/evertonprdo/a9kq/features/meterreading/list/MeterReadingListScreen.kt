@@ -19,15 +19,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.evertonprdo.a9kq.R
+import dev.evertonprdo.a9kq.libs.utils.toDp
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
@@ -116,15 +114,5 @@ fun MeterReadingListScreen(
                 .fillMaxWidth()
                 .padding(24.dp, 16.dp)
         ) { Text("Add New Record") }
-    }
-}
-
-@Composable
-fun TextUnit.toDp(scale: Float = 1f): Dp {
-    val density = LocalDensity.current
-    val value = this * scale
-
-    return with(density) {
-        value.toDp()
     }
 }

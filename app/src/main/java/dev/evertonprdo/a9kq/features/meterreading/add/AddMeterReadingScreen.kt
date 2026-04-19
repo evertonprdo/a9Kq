@@ -6,13 +6,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -23,18 +27,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.evertonprdo.a9kq.libs.utils.toDp
+import dev.evertonprdo.a9kq.ui.theme.Theme
 
 @Composable
 fun AddMeterReadingScreen(
-    viewModel: AddMeterReadingViewModel = viewModel(factory = AddMeterReadingViewModel.factory),
+    viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create(),
     onSubmit: () -> Unit
 ) {
-    fun handleOnSubmit() {
-        viewModel.submit()
-        onSubmit()
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    Content(
+        uiState = uiState,
+        onValueChange = viewModel::updateMeterIndex,
+        onDismissRequest = viewModel::dismissDialog,
+        canBeSubmitted = viewModel.canBeSubmitted,
+        onSubmit = { viewModel.submit(onSubmit) }
+    )
+}
+
+@Composable
+private fun Content(
+    uiState: AddMeterUiState,
+    canBeSubmitted: Boolean,
+    onValueChange: (Int?) -> Unit,
+    onDismissRequest: () -> Unit,
+    onSubmit: () -> Unit
+) {
+    val submitting = uiState.submittingState
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -46,18 +68,35 @@ fun AddMeterReadingScreen(
             modifier = Modifier.width(IntrinsicSize.Max)
         ) {
             UIntTextField(
-                value = viewModel.amount,
-                onValueChange = { viewModel.onAmountChange(it) }
+                value = uiState.meterIndex,
+                onValueChange = onValueChange
             )
 
             Button(
-                onClick = ::handleOnSubmit,
-                enabled = viewModel.canBeSubmitted(),
+                onClick = onSubmit,
+                enabled = canBeSubmitted,
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
-            ) { Text("Submit") }
+            ) {
+                if (submitting is AddMeterUiState.Submission.Idle)
+                    Text("Submit")
+                else
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(MaterialTheme.typography.labelLarge.fontSize.toDp()),
+                        strokeWidth = 2.dp
+                    )
+            }
         }
     }
+
+    if (submitting is AddMeterUiState.Submission.Failure)
+        AlertDialog(
+            onDismissRequest = onDismissRequest,
+            confirmButton = { TextButton(onDismissRequest) { Text("Confirm") } },
+            title = { Text("Something goes wrong") },
+            text = { Text("Error: ${submitting.cause.message}") }
+        )
+
 }
 
 @Composable
@@ -90,4 +129,18 @@ fun UIntTextField(
         isError = isDirty && number.none { it.isDigit() },
         shape = MaterialTheme.shapes.large
     )
+}
+
+@Preview
+@Composable
+private fun AddMeterReadingScreenPreview() {
+    Theme() {
+        Content(
+            uiState = AddMeterUiState(),
+            canBeSubmitted = false,
+            onDismissRequest = {},
+            onValueChange = {},
+            onSubmit = {}
+        )
+    }
 }
