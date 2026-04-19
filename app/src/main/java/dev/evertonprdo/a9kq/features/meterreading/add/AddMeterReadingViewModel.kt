@@ -18,21 +18,29 @@ import kotlinx.coroutines.launch
 import kotlin.time.Clock
 
 class AddMeterReadingViewModel(
-    private val readMeterUseCase: ReadMeterUseCase
+    private val readMeterUseCase: ReadMeterUseCase,
+    private val onSubmit: () -> Unit
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<AddMeterUiState> = MutableStateFlow(AddMeterUiState())
     val uiState = _uiState.asStateFlow()
 
+    fun onAction(action: AddMeterAction) {
+        when (action) {
+            AddMeterAction.DismissDialog -> dismissDialog()
+            is AddMeterAction.OnMeterIndexChange -> {
+                updateMeterIndex(action.value)
+            }
+
+            AddMeterAction.Submit -> submit()
+        }
+    }
+
     fun updateMeterIndex(value: Int?) {
         _uiState.update { it.copy(meterIndex = value) }
     }
 
-    val canBeSubmitted
-        get(): Boolean =
-            with(uiState.value) { meterIndex != null && submittingState is AddMeterUiState.Submission.Idle }
-
-    fun submit(onSuccess: () -> Unit) {
+    fun submit() {
         val newRecord = uiState.value.meterIndex ?: return
 
         val read = MeterReading(
@@ -41,23 +49,23 @@ class AddMeterReadingViewModel(
         )
 
         viewModelScope.launch {
-            _uiState.update { it.copy(submittingState = AddMeterUiState.toSubmitting()) }
+            _uiState.update { it.copy(submissionState = AddMeterUiState.toSubmitting()) }
             delay(2000)
 
             try {
                 readMeterUseCase(read)
                 dismissDialog()
-                onSuccess()
+                onSubmit()
             } catch (e: Exception) {
-                _uiState.update { it.copy(submittingState = AddMeterUiState.toFailure(e)) }
+                _uiState.update { it.copy(submissionState = AddMeterUiState.toFailure(e)) }
             }
         }
     }
 
-    fun dismissDialog() = _uiState.update { it.copy(submittingState = AddMeterUiState.toIdle()) }
+    fun dismissDialog() = _uiState.update { it.copy(submissionState = AddMeterUiState.toIdle()) }
 
     companion object {
-        private val Factory = viewModelFactory {
+        private fun factory(onSubmit: () -> Unit) = viewModelFactory {
 
             val readMeterUseCase = ReadMeterUseCase(
                 meterReadingRepository = ServiceLocator.meterReadingRepository
@@ -65,12 +73,14 @@ class AddMeterReadingViewModel(
 
             initializer {
                 AddMeterReadingViewModel(
-                    readMeterUseCase = readMeterUseCase
+                    readMeterUseCase = readMeterUseCase,
+                    onSubmit = onSubmit
                 )
             }
         }
 
         @Composable
-        fun create() = viewModel<AddMeterReadingViewModel>(factory = Factory)
+        fun create(onSubmit: () -> Unit) =
+            viewModel<AddMeterReadingViewModel>(factory = factory(onSubmit))
     }
 }

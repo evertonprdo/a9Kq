@@ -53,7 +53,7 @@ fun App() {
                 }
 
                 "/records" -> NavEntry(key) { MeterReadingListScreen { backStack.add("/record/add") } }
-                "/record/add" -> NavEntry(key) { AddMeterReadingScreen { backStack.removeLastOrNull() } }
+                "/record/add" -> NavEntry(key) { AddMeterReadingScreen({ backStack.removeLastOrNull() }) }
                 "/bills" -> NavEntry(key) { BillListScreen { backStack.add("/bill/add") } }
                 "/bill/add" -> NavEntry(key) { AddBillScreen { backStack.removeLastOrNull() } }
 

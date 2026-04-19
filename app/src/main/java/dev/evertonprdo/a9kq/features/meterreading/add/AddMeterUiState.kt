@@ -2,8 +2,11 @@ package dev.evertonprdo.a9kq.features.meterreading.add
 
 data class AddMeterUiState(
     val meterIndex: Int? = null,
-    val submittingState: Submission = Submission.Idle
+    val submissionState: Submission = Submission.Idle,
 ) {
+    val canBeSubmitted: Boolean
+        get() = meterIndex != null && submissionState is Submission.Idle
+
     sealed class Submission {
         data object Idle : Submission()
         data object Submitting : Submission()

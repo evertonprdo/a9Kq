@@ -35,28 +35,24 @@ import dev.evertonprdo.a9kq.ui.theme.Theme
 
 @Composable
 fun AddMeterReadingScreen(
-    viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create(),
-    onSubmit: () -> Unit
+    onSubmit: () -> Unit,
+    viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create(onSubmit)
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Content(
         uiState = uiState,
-        onValueChange = viewModel::updateMeterIndex,
-        onDismissRequest = viewModel::dismissDialog,
-        canBeSubmitted = viewModel.canBeSubmitted,
-        onSubmit = { viewModel.submit(onSubmit) }
+        onAction = viewModel::onAction
     )
 }
 
 @Composable
 private fun Content(
     uiState: AddMeterUiState,
-    canBeSubmitted: Boolean,
-    onValueChange: (Int?) -> Unit,
-    onDismissRequest: () -> Unit,
-    onSubmit: () -> Unit
+    onAction: (AddMeterAction) -> Unit
 ) {
-    val submitting = uiState.submittingState
+    val submitting = uiState.submissionState
+    val canBeSubmitted = uiState.canBeSubmitted
+    val onDismissRequest = { onAction(AddMeterAction.DismissDialog) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -69,11 +65,11 @@ private fun Content(
         ) {
             UIntTextField(
                 value = uiState.meterIndex,
-                onValueChange = onValueChange
+                onValueChange = { onAction(AddMeterAction.OnMeterIndexChange(it)) }
             )
 
             Button(
-                onClick = onSubmit,
+                onClick = { onAction(AddMeterAction.Submit) },
                 enabled = canBeSubmitted,
                 modifier = Modifier
                     .fillMaxWidth(0.75f)
@@ -137,10 +133,32 @@ private fun AddMeterReadingScreenPreview() {
     Theme() {
         Content(
             uiState = AddMeterUiState(),
-            canBeSubmitted = false,
-            onDismissRequest = {},
-            onValueChange = {},
-            onSubmit = {}
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun FilledAddMeterReadingScreenPreview() {
+    Theme() {
+        Content(
+            uiState = AddMeterUiState(2250),
+            onAction = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun SubmittingAddMeterReadingScreenPreview() {
+    Theme() {
+        Content(
+            uiState = AddMeterUiState(
+                meterIndex = 2250,
+                submissionState = AddMeterUiState.toSubmitting()
+            ),
+            onAction = {}
         )
     }
 }
