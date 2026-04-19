@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +24,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.evertonprdo.a9kq.R
 import dev.evertonprdo.a9kq.libs.utils.toDp
 import kotlinx.datetime.TimeZone
@@ -32,10 +32,10 @@ import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun MeterReadingListScreen(
-    viewModel: MeterReadingListViewModel = viewModel(factory = MeterReadingListViewModel.factory),
-    onRequestAddRecord: () -> Unit
+    onRequestAddRecord: () -> Unit,
+    viewModel: MeterReadingListViewModel = MeterReadingListViewModel.create()
 ) {
-    val readings by viewModel.meterReadings.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -62,47 +62,56 @@ fun MeterReadingListScreen(
                 )
             }
 
-            items(items = readings, key = { it.readAt }) { item ->
-                val readAt = item.readAt
-                val local = readAt.toLocalDateTime(TimeZone.currentSystemDefault())
-                val formatted = "%02d/%02d at %02dh%02d".format(
-                    local.month.number,
-                    local.day,
-                    local.hour,
-                    local.minute
-                )
+            when (val ui = uiState) {
+                MeterReadingListUiState.Loading -> item { CircularProgressIndicator() }
 
-                Card() {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillParentMaxWidth()
-                            .padding(24.dp, 16.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            val style = MaterialTheme.typography.titleMedium
-                            Icon(
-                                painter = painterResource(R.drawable.calendar),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(style.fontSize.toDp(1.2f))
-                            )
-                            Text(
-                                text = formatted,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                style = style
-                            )
-                        }
+                is MeterReadingListUiState.Failure -> item { Text("Something wrong") }
 
-                        Text(
-                            text = item.meterIndex.toString(),
-                            fontWeight = FontWeight.Medium,
-                            style = MaterialTheme.typography.titleLarge,
+                is MeterReadingListUiState.Standard -> {
+                    val readings = ui.history
+                    items(items = readings, key = { it.readAt }) { item ->
+                        val readAt = item.readAt
+                        val local = readAt.toLocalDateTime(TimeZone.currentSystemDefault())
+                        val formatted = "%02d/%02d at %02dh%02d".format(
+                            local.month.number,
+                            local.day,
+                            local.hour,
+                            local.minute
                         )
+
+                        Card() {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .fillParentMaxWidth()
+                                    .padding(24.dp, 16.dp)
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    val style = MaterialTheme.typography.titleMedium
+                                    Icon(
+                                        painter = painterResource(R.drawable.calendar),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(style.fontSize.toDp(1.2f))
+                                    )
+                                    Text(
+                                        text = formatted,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = style
+                                    )
+                                }
+
+                                Text(
+                                    text = item.meterIndex.toString(),
+                                    fontWeight = FontWeight.Medium,
+                                    style = MaterialTheme.typography.titleLarge,
+                                )
+                            }
+                        }
                     }
                 }
             }

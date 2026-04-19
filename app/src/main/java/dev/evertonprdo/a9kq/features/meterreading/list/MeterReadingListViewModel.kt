@@ -1,38 +1,52 @@
 package dev.evertonprdo.a9kq.features.meterreading.list
 
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import dev.evertonprdo.a9kq.di.ServiceLocator
-import dev.evertonprdo.a9kq.domain.entities.MeterReading
-import dev.evertonprdo.a9kq.domain.repositories.MeterReadingRepository
+import dev.evertonprdo.a9kq.domain.usecases.MeterReadingHistoryUseCase
+import dev.evertonprdo.a9kq.domain.usecases.RemoveMeterReadingUseCase
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class MeterReadingListViewModel(
-    meterReadingRepository: MeterReadingRepository
+    private val meterReadingHistoryUseCase: MeterReadingHistoryUseCase,
+    private val removeMeterReadingUseCase: RemoveMeterReadingUseCase
 ) : ViewModel() {
-
-    val meterReadings: StateFlow<List<MeterReading>> =
-        meterReadingRepository.getAll()
-            .map { it.asReversed() }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5000L),
-                initialValue = emptyList()
-            )
+    val uiState: StateFlow<MeterReadingListUiState> = meterReadingHistoryUseCase()
+        .map { MeterReadingListUiState.toStandard(it) }
+        .catch { emit(MeterReadingListUiState.toFailure(it)) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = MeterReadingListUiState.Loading
+        )
 
     companion object {
-        val factory = viewModelFactory {
+        private val Factory = viewModelFactory {
+
+            val meterReadingHistoryUseCase = MeterReadingHistoryUseCase(
+                meterReadingRepository = ServiceLocator.meterReadingRepository
+            )
+            val removeMeterReadingUseCase = RemoveMeterReadingUseCase(
+                meterReadingRepository = ServiceLocator.meterReadingRepository
+            )
 
             initializer {
                 MeterReadingListViewModel(
-                    meterReadingRepository = ServiceLocator.meterReadingRepository
+                    meterReadingHistoryUseCase = meterReadingHistoryUseCase,
+                    removeMeterReadingUseCase = removeMeterReadingUseCase
                 )
             }
         }
+
+        @Composable
+        fun create() = viewModel<MeterReadingListViewModel>(factory = Factory)
     }
 }
