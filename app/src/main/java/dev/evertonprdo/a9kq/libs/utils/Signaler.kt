@@ -11,5 +11,5 @@ class Signaler {
     fun signals() = channel.receiveAsFlow()
 }
 
-suspend inline fun Signaler.onSignal(crossinline action: () -> Unit) =
-    this.signals().collect { action() }
+suspend inline fun Signaler.onSignal(crossinline callback: () -> Unit) =
+    this.signals().collect { callback() }

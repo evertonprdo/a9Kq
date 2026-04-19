@@ -37,11 +37,11 @@ import dev.evertonprdo.a9kq.ui.theme.Theme
 
 @Composable
 fun AddMeterReadingScreen(
-    onSubmit: () -> Unit,
+    onReadingAdded: () -> Unit,
     viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { viewModel.successSignaler.onSignal(onSubmit) }
+    LaunchedEffect(Unit) { viewModel.successSignaler.onSignal(onReadingAdded) }
 
     Content(
         uiState = uiState,

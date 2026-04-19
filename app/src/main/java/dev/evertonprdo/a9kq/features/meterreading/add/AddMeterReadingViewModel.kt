@@ -11,7 +11,6 @@ import dev.evertonprdo.a9kq.domain.entities.MeterReading
 import dev.evertonprdo.a9kq.domain.usecases.ReadMeterUseCase
 import dev.evertonprdo.a9kq.libs.KWh
 import dev.evertonprdo.a9kq.libs.utils.Signaler
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -52,7 +51,6 @@ class AddMeterReadingViewModel(
 
         viewModelScope.launch {
             _uiState.update { it.copy(submissionState = AddMeterReadingUiState.toSubmitting()) }
-            delay(2000)
 
             try {
                 readMeterUseCase(read)

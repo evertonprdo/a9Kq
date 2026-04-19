@@ -20,4 +20,11 @@ class MeterReadingRepositoryImpl(
 
     override suspend fun add(read: MeterReading) =
         meterReadingDao.insert(meterReadingMapper.fromDomain(read))
+
+    override suspend fun remove(read: MeterReading) =
+        meterReadingDao.delete(meterReadingMapper.fromDomain(read))
+
+    override suspend fun exists(read: MeterReading): Boolean =
+        meterReadingDao.exists(meterReadingMapper.fromDomain(read).readAt)
+
 }

@@ -1,6 +1,7 @@
 package dev.evertonprdo.a9kq.data.room.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import dev.evertonprdo.a9kq.data.room.schema.MeterReading
@@ -17,4 +18,10 @@ interface MeterReadingDao {
 
     @Insert
     suspend fun insert(item: MeterReading)
+
+    @Delete
+    suspend fun delete(item: MeterReading)
+
+    @Query("SELECT EXISTS(SELECT 1 FROM meter_reading WHERE read_at = :readAt)")
+    suspend fun exists(readAt: Long): Boolean
 }
