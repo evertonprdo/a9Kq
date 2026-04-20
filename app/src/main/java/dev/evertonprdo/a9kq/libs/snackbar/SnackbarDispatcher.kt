@@ -25,6 +25,7 @@ class SnackbarDispatcher(
     fun showMessage(
         message: String,
         label: String,
+        duration: SnackbarDuration = SnackbarDuration.Long,
         onDismiss: () -> Unit = {},
         onAction: () -> Unit
     ) = scope.launch {
@@ -32,7 +33,7 @@ class SnackbarDispatcher(
             message = message,
             actionLabel = label,
             withDismissAction = true,
-            duration = SnackbarDuration.Long
+            duration = duration
         )
 
         when (res) {

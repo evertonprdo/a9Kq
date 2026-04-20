@@ -33,6 +33,7 @@ class MeterReadingListViewModel(
     private val _events = Channel<MeterReadingListEvent>()
     val events = _events.receiveAsFlow()
 
+    // TODO: Persist `pendingRemovals` across navigation
     private val pendingRemovals = MutableStateFlow<List<MeterReadingKey>>(emptyList())
     val uiState: StateFlow<MeterReadingListUiState> = meterReadingHistoryUseCase()
         .combine(pendingRemovals) { list, pend -> list.filterNot { it.key in pend } }
