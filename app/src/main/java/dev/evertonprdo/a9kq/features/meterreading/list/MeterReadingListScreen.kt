@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +24,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.evertonprdo.a9kq.R
+import dev.evertonprdo.a9kq.libs.snackbar.LocalSnackbarDispatcher
 import dev.evertonprdo.a9kq.libs.utils.toDp
+import dev.evertonprdo.a9kq.ui.components.SwipeToRemoveCard
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
@@ -101,7 +102,10 @@ private fun Content(
                         local.minute
                     )
 
-                    Card() {
+                    val snackbarDispatcher = LocalSnackbarDispatcher.current
+                    SwipeToRemoveCard(
+                        onSwipe = { snackbarDispatcher.showMessage("Swipe!") }
+                    ) {
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
@@ -139,3 +143,4 @@ private fun Content(
         }
     }
 }
+

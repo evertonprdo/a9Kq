@@ -18,7 +18,7 @@ class SnackbarDispatcher(
         snackHost.showSnackbar(
             message = message,
             withDismissAction = true,
-            duration = SnackbarDuration.Long
+            duration = SnackbarDuration.Short
         )
     }
 

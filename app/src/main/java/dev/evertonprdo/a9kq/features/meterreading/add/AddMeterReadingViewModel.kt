@@ -28,7 +28,7 @@ class AddMeterReadingViewModel(
 
     fun onAction(action: AddMeterReadingAction) {
         when (action) {
-            AddMeterReadingAction.DismissDialog -> dismissDialog()
+            AddMeterReadingAction.DismissDialog -> clearSubmissionState()
             is AddMeterReadingAction.OnMeterReadingIndexChange -> {
                 updateMeterIndex(action.value)
             }
@@ -54,7 +54,6 @@ class AddMeterReadingViewModel(
 
             try {
                 readMeterUseCase(read)
-                dismissDialog()
                 successSignaler.signal()
             } catch (e: Exception) {
                 _uiState.update { it.copy(submissionState = AddMeterReadingUiState.toFailure(e)) }
@@ -62,7 +61,7 @@ class AddMeterReadingViewModel(
         }
     }
 
-    private fun dismissDialog() =
+    private fun clearSubmissionState() =
         _uiState.update { it.copy(submissionState = AddMeterReadingUiState.toIdle()) }
 
     companion object {
