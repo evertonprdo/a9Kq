@@ -25,6 +25,9 @@ interface MeterReadingDao {
     @Delete
     suspend fun delete(item: MeterReading)
 
+    @Query("DELETE FROM meter_reading WHERE read_at IN (:keys)")
+    suspend fun delete(keys: List<Long>)
+
     @Query("SELECT EXISTS(SELECT 1 FROM meter_reading WHERE read_at = :readAt)")
     suspend fun exists(readAt: Long): Boolean
 }

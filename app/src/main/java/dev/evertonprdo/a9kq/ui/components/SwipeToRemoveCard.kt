@@ -14,11 +14,14 @@ import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxDefaults
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.painterResource
@@ -36,7 +39,12 @@ fun SwipeToRemoveCard(
     border: BorderStroke? = null,
     content: @Composable (ColumnScope.() -> Unit)
 ) {
-    val dismissState = rememberSwipeToDismissBoxState()
+    val positionalThreshold: (totalDistance: Float) -> Float =
+        SwipeToDismissBoxDefaults.positionalThreshold
+
+    val dismissState: SwipeToDismissBoxState =
+        remember { SwipeToDismissBoxState(SwipeToDismissBoxValue.Settled, positionalThreshold) }
+    // rememberSavable restores the dismissState when it comes back to composition
 
     BoxWithConstraints {
         val width = constraints.maxWidth.toFloat()
@@ -46,13 +54,13 @@ fun SwipeToRemoveCard(
         val fraction = (offset.absoluteValue / (width * colorTransitionThreshold)).coerceIn(0f, 1f)
 
         val dynamicColor = lerp(
-            start = MaterialTheme.colorScheme.surface.copy(0.5f),
+            start = Color.Transparent,
             stop = MaterialTheme.colorScheme.error,
             fraction = fraction
         )
 
         val dynamicTint = lerp(
-            start = MaterialTheme.colorScheme.onSurface.copy(0.5f),
+            start = Color.Transparent,
             stop = MaterialTheme.colorScheme.onError,
             fraction = fraction
         )

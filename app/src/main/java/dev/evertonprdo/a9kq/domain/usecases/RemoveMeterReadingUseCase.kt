@@ -13,4 +13,8 @@ class RemoveMeterReadingUseCase(
 
         meterReadingRepository.remove(meterReading)
     }
+
+    suspend operator fun invoke(readAt: List<Long>) {
+        meterReadingRepository.remove(readAt)
+    }
 }

@@ -28,6 +28,13 @@ class MeterReadingRepositoryImpl(
     override suspend fun remove(read: MeterReading) =
         meterReadingDao.delete(meterReadingMapper.fromDomain(read))
 
+    override suspend fun remove(reads: List<Long>) =
+        meterReadingDao.delete(reads)
+
     override suspend fun exists(read: MeterReading): Boolean =
         meterReadingDao.exists(meterReadingMapper.fromDomain(read).readAt)
+
+    override suspend fun exists(readAt: Long): Boolean =
+        meterReadingDao.exists(readAt)
+
 }

@@ -13,6 +13,8 @@ interface MeterReadingRepository {
 
     suspend fun add(read: MeterReading)
     suspend fun remove(read: MeterReading)
+    suspend fun remove(reads: List<Long>)
 
     suspend fun exists(read: MeterReading): Boolean
+    suspend fun exists(readAt: Long): Boolean
 }

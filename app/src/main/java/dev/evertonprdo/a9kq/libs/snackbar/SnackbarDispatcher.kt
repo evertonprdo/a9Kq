@@ -22,7 +22,12 @@ class SnackbarDispatcher(
         )
     }
 
-    fun showMessage(message: String, label: String, onAction: () -> Unit) = scope.launch {
+    fun showMessage(
+        message: String,
+        label: String,
+        onDismiss: () -> Unit = {},
+        onAction: () -> Unit
+    ) = scope.launch {
         val res = snackHost.showSnackbar(
             message = message,
             actionLabel = label,
@@ -30,8 +35,10 @@ class SnackbarDispatcher(
             duration = SnackbarDuration.Long
         )
 
-        if (res == SnackbarResult.ActionPerformed)
-            onAction()
+        when (res) {
+            SnackbarResult.Dismissed -> onDismiss()
+            SnackbarResult.ActionPerformed -> onAction()
+        }
     }
 }
 
