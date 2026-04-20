@@ -42,80 +42,10 @@ fun MeterReadingListScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                end = 16.dp,
-                start = 16.dp,
-                bottom = 100.dp
-            ),
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        ) {
-            item {
-                Text(
-                    text = "Energy Record History",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            when (val ui = uiState) {
-                MeterReadingListUiState.Loading -> item { CircularProgressIndicator() }
-
-                is MeterReadingListUiState.Failure -> item { Text("Something wrong") }
-
-                is MeterReadingListUiState.Standard -> {
-                    val readings = ui.history
-                    items(items = readings, key = { it.readAt }) { item ->
-                        val readAt = item.readAt
-                        val local = readAt.toLocalDateTime(TimeZone.currentSystemDefault())
-                        val formatted = "%02d/%02d at %02dh%02d".format(
-                            local.month.number,
-                            local.day,
-                            local.hour,
-                            local.minute
-                        )
-
-                        Card() {
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillParentMaxWidth()
-                                    .padding(24.dp, 16.dp)
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    val style = MaterialTheme.typography.titleMedium
-                                    Icon(
-                                        painter = painterResource(R.drawable.calendar),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.size(style.fontSize.toDp(1.2f))
-                                    )
-                                    Text(
-                                        text = formatted,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        style = style
-                                    )
-                                }
-
-                                Text(
-                                    text = item.meterIndex.toString(),
-                                    fontWeight = FontWeight.Medium,
-                                    style = MaterialTheme.typography.titleLarge,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        Content(
+            uiState = uiState,
+            modifier = Modifier.weight(1f)
+        )
 
         Button(
             onClick = onRequestAddRecord,
@@ -123,5 +53,89 @@ fun MeterReadingListScreen(
                 .fillMaxWidth()
                 .padding(24.dp, 16.dp)
         ) { Text("Add New Record") }
+    }
+}
+
+@Composable
+private fun Content(
+    uiState: MeterReadingListUiState,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            end = 16.dp,
+            start = 16.dp,
+            bottom = 100.dp
+        ),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        item {
+            Text(
+                text = "Energy Record History",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+
+        when (uiState) {
+            MeterReadingListUiState.Loading -> item { CircularProgressIndicator() }
+
+            is MeterReadingListUiState.Failure -> item {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text("Something wrong")
+                    Text("Error: ${uiState.cause.message}")
+                }
+            }
+
+            is MeterReadingListUiState.Standard -> {
+                val readings = uiState.history
+                items(items = readings, key = { it.readAt }) { item ->
+                    val readAt = item.readAt
+                    val local = readAt.toLocalDateTime(TimeZone.currentSystemDefault())
+                    val formatted = "%02d/%02d at %02dh%02d".format(
+                        local.month.number,
+                        local.day,
+                        local.hour,
+                        local.minute
+                    )
+
+                    Card() {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillParentMaxWidth()
+                                .padding(24.dp, 16.dp)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val style = MaterialTheme.typography.titleMedium
+                                Icon(
+                                    painter = painterResource(R.drawable.calendar),
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.size(style.fontSize.toDp(1.2f))
+                                )
+                                Text(
+                                    text = formatted,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = style
+                                )
+                            }
+
+                            Text(
+                                text = item.meterIndex.toString(),
+                                fontWeight = FontWeight.Medium,
+                                style = MaterialTheme.typography.titleLarge,
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }

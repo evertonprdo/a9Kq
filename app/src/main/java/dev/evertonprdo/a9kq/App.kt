@@ -1,18 +1,20 @@
 package dev.evertonprdo.a9kq
 
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -21,6 +23,9 @@ import dev.evertonprdo.a9kq.features.billing.add.AddBillScreen
 import dev.evertonprdo.a9kq.features.billing.list.BillListScreen
 import dev.evertonprdo.a9kq.features.meterreading.add.AddMeterReadingScreen
 import dev.evertonprdo.a9kq.features.meterreading.list.MeterReadingListScreen
+import dev.evertonprdo.a9kq.libs.snackbar.rememberAppSnackbarDispatcher
+import dev.evertonprdo.a9kq.libs.utils.unfocusOnTap
+import kotlinx.coroutines.launch
 
 @Composable
 fun App() {
@@ -28,7 +33,26 @@ fun App() {
     val backStack = rememberSaveable { mutableStateListOf<Any>("/") }
     val focusManager = LocalFocusManager.current
 
-    Scaffold { contentPadding ->
+    val scope = rememberCoroutineScope()
+    val snackbarDispatcher = rememberAppSnackbarDispatcher()
+
+    Scaffold(
+        snackbarHost = snackbarDispatcher::SnackbarHost,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                text = { Text("Show snackbar") },
+                icon = { Icon(painterResource(R.drawable.calendar), contentDescription = "") },
+                onClick = {
+                    scope.launch {
+                        snackbarDispatcher.showMessage(
+                            message = ":)",
+                            label = "log"
+                        ) { println("LOG: Snackbar Action") }
+                    }
+                }
+            )
+        }
+    ) { contentPadding ->
         NavDisplay(
             backStack = backStack,
             onBack = { backStack.removeLastOrNull() },
@@ -38,7 +62,7 @@ fun App() {
             ),
             modifier = Modifier
                 .fillMaxSize()
-                .pointerInput(Unit) { detectTapGestures(onTap = { focusManager.clearFocus() }) }
+                .unfocusOnTap(focusManager)
                 .padding(contentPadding)
 
         ) { key ->
