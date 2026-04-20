@@ -1,22 +1,28 @@
 package dev.evertonprdo.a9kq.libs.snackbar
 
 import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-class SnackbarDispatcher(private val snackHost: SnackbarHostState) {
+class SnackbarDispatcher(
+    private val snackHost: SnackbarHostState,
+    private val scope: CoroutineScope
+) {
 
-    suspend fun showMessage(message: String) =
+    fun showMessage(message: String) = scope.launch {
         snackHost.showSnackbar(
             message = message,
             withDismissAction = true,
-            duration = SnackbarDuration.Short
+            duration = SnackbarDuration.Long
         )
+    }
 
-    suspend fun showMessage(message: String, label: String, onAction: () -> Unit) {
+    fun showMessage(message: String, label: String, onAction: () -> Unit) = scope.launch {
         val res = snackHost.showSnackbar(
             message = message,
             actionLabel = label,
@@ -27,14 +33,15 @@ class SnackbarDispatcher(private val snackHost: SnackbarHostState) {
         if (res == SnackbarResult.ActionPerformed)
             onAction()
     }
-
-    @Composable
-    fun SnackbarHost() =
-        SnackbarHost(snackHost)
 }
 
 @Composable
 fun rememberAppSnackbarDispatcher(
-    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
-): SnackbarDispatcher = remember(snackbarHostState) { SnackbarDispatcher(snackbarHostState) }
-
+    snackbarHostState: SnackbarHostState,
+    scope: CoroutineScope = rememberCoroutineScope()
+): SnackbarDispatcher = remember(snackbarHostState) {
+    SnackbarDispatcher(
+        snackHost = snackbarHostState,
+        scope = scope
+    )
+}

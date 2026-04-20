@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.evertonprdo.a9kq.libs.snackbar.LocalSnackbarDispatcher
 import dev.evertonprdo.a9kq.libs.utils.onSignal
 import dev.evertonprdo.a9kq.libs.utils.toDp
 import dev.evertonprdo.a9kq.ui.theme.Theme
@@ -41,7 +42,14 @@ fun AddMeterReadingScreen(
     viewModel: AddMeterReadingViewModel = AddMeterReadingViewModel.create()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) { viewModel.successSignaler.onSignal(onReadingAdded) }
+    val snackbarDispatcher = LocalSnackbarDispatcher.current
+
+    LaunchedEffect(Unit) {
+        viewModel.successSignaler.onSignal {
+            snackbarDispatcher.showMessage("Meter Reading Added")
+            onReadingAdded()
+        }
+    }
 
     Content(
         uiState = uiState,

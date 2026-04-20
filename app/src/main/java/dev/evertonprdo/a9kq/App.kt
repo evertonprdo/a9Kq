@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -28,12 +31,15 @@ fun App() {
 
     val backStack = rememberSaveable { mutableStateListOf<Any>("/") }
     val focusManager = LocalFocusManager.current
-    val snackbarDispatcher = rememberAppSnackbarDispatcher()
 
-    Scaffold(
-        snackbarHost = snackbarDispatcher::SnackbarHost,
-    ) { contentPadding ->
-        ProvideSnackbarDispatcher(snackbarDispatcher) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarDispatcher = rememberAppSnackbarDispatcher(snackbarHostState)
+
+    ProvideSnackbarDispatcher(snackbarDispatcher) {
+        Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
+        ) { contentPadding ->
+
             NavDisplay(
                 backStack = backStack,
                 onBack = { backStack.removeLastOrNull() },
