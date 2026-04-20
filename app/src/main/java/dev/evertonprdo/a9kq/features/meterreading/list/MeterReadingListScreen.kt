@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -25,7 +26,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.evertonprdo.a9kq.R
+import dev.evertonprdo.a9kq.libs.snackbar.LocalSnackbarDispatcher
 import dev.evertonprdo.a9kq.libs.utils.toDp
+import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
 import kotlinx.datetime.toLocalDateTime
@@ -36,6 +39,8 @@ fun MeterReadingListScreen(
     viewModel: MeterReadingListViewModel = MeterReadingListViewModel.create()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val scope = rememberCoroutineScope()
+    val snackbarDispatcher = LocalSnackbarDispatcher.current
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -46,6 +51,13 @@ fun MeterReadingListScreen(
             uiState = uiState,
             modifier = Modifier.weight(1f)
         )
+
+        Button(
+            onClick = { scope.launch { snackbarDispatcher.showMessage("Hello Composition Local Snackbar") } },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp, 16.dp)
+        ) { Text("Show SnackBar") }
 
         Button(
             onClick = onRequestAddRecord,

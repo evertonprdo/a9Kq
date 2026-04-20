@@ -37,3 +37,4 @@ class SnackbarDispatcher(private val snackHost: SnackbarHostState) {
 fun rememberAppSnackbarDispatcher(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() }
 ): SnackbarDispatcher = remember(snackbarHostState) { SnackbarDispatcher(snackbarHostState) }
+

@@ -4,17 +4,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -23,65 +19,51 @@ import dev.evertonprdo.a9kq.features.billing.add.AddBillScreen
 import dev.evertonprdo.a9kq.features.billing.list.BillListScreen
 import dev.evertonprdo.a9kq.features.meterreading.add.AddMeterReadingScreen
 import dev.evertonprdo.a9kq.features.meterreading.list.MeterReadingListScreen
+import dev.evertonprdo.a9kq.libs.snackbar.ProvideSnackbarDispatcher
 import dev.evertonprdo.a9kq.libs.snackbar.rememberAppSnackbarDispatcher
 import dev.evertonprdo.a9kq.libs.utils.unfocusOnTap
-import kotlinx.coroutines.launch
 
 @Composable
 fun App() {
 
     val backStack = rememberSaveable { mutableStateListOf<Any>("/") }
     val focusManager = LocalFocusManager.current
-
-    val scope = rememberCoroutineScope()
     val snackbarDispatcher = rememberAppSnackbarDispatcher()
 
     Scaffold(
         snackbarHost = snackbarDispatcher::SnackbarHost,
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text("Show snackbar") },
-                icon = { Icon(painterResource(R.drawable.calendar), contentDescription = "") },
-                onClick = {
-                    scope.launch {
-                        snackbarDispatcher.showMessage(
-                            message = ":)",
-                            label = "log"
-                        ) { println("LOG: Snackbar Action") }
-                    }
-                }
-            )
-        }
     ) { contentPadding ->
-        NavDisplay(
-            backStack = backStack,
-            onBack = { backStack.removeLastOrNull() },
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator()
-            ),
-            modifier = Modifier
-                .fillMaxSize()
-                .unfocusOnTap(focusManager)
-                .padding(contentPadding)
+        ProvideSnackbarDispatcher(snackbarDispatcher) {
+            NavDisplay(
+                backStack = backStack,
+                onBack = { backStack.removeLastOrNull() },
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator()
+                ),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .unfocusOnTap(focusManager)
+                    .padding(contentPadding)
 
-        ) { key ->
-            when (key) {
-                "/" -> NavEntry(key) {
-                    Column(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Button({ backStack.add("/records") }) { Text("Records ->") }
-                        Button({ backStack.add("/bills") }) { Text("Bills ->") }
+            ) { key ->
+                when (key) {
+                    "/" -> NavEntry(key) {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            Button({ backStack.add("/records") }) { Text("Records ->") }
+                            Button({ backStack.add("/bills") }) { Text("Bills ->") }
+                        }
                     }
+
+                    "/records" -> NavEntry(key) { MeterReadingListScreen({ backStack.add("/record/add") }) }
+                    "/record/add" -> NavEntry(key) { AddMeterReadingScreen({ backStack.removeLastOrNull() }) }
+                    "/bills" -> NavEntry(key) { BillListScreen { backStack.add("/bill/add") } }
+                    "/bill/add" -> NavEntry(key) { AddBillScreen { backStack.removeLastOrNull() } }
+
+                    else -> NavEntry(Unit) { Text("404") }
                 }
-
-                "/records" -> NavEntry(key) { MeterReadingListScreen({ backStack.add("/record/add") }) }
-                "/record/add" -> NavEntry(key) { AddMeterReadingScreen({ backStack.removeLastOrNull() }) }
-                "/bills" -> NavEntry(key) { BillListScreen { backStack.add("/bill/add") } }
-                "/bill/add" -> NavEntry(key) { AddBillScreen { backStack.removeLastOrNull() } }
-
-                else -> NavEntry(Unit) { Text("404") }
             }
         }
     }
