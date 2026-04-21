@@ -1,4 +1,4 @@
-package dev.evertonprdo.a9kq.data.room
+package dev.evertonprdo.a9kq._test
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -15,6 +15,7 @@ import dev.evertonprdo.a9kq.data.room.schema.ReadingSchedule
     ],
     version = 1
 )
-abstract class AppDatabase : RoomDatabase() {
+abstract class TestAppDatabase : RoomDatabase() {
     abstract fun meterReadingDao(): MeterReadingDao
+    abstract fun meterReadingTestDao(): MeterReadingTestDao
 }

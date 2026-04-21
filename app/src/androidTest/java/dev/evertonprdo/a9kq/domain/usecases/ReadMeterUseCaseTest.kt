@@ -1,7 +1,7 @@
 package dev.evertonprdo.a9kq.domain.usecases
 
 import dev.evertonprdo.a9kq._test.DatabaseBuilder
-import dev.evertonprdo.a9kq.data.room.AppDatabase
+import dev.evertonprdo.a9kq._test.TestAppDatabase
 import dev.evertonprdo.a9kq.data.room.mappers.MeterReadingMapper
 import dev.evertonprdo.a9kq.data.room.repository.MeterReadingRepositoryImpl
 import dev.evertonprdo.a9kq.domain.entities.MeterReading
@@ -15,7 +15,7 @@ import kotlin.time.Clock
 
 class ReadMeterUseCaseTest {
 
-    lateinit var db: AppDatabase
+    lateinit var db: TestAppDatabase
     lateinit var readMeterUseCase: ReadMeterUseCase
 
     @Before
@@ -37,7 +37,7 @@ class ReadMeterUseCaseTest {
     }
 
     @Test
-    fun readMeter() = runTest {
+    fun givenValidReading_whenRead_thenPersistWithCorrectValues() = runTest {
         val meterIndex = 100
         val now = Clock.System.now()
 
@@ -47,16 +47,9 @@ class ReadMeterUseCaseTest {
         )
 
         readMeterUseCase(reading)
+        val persisted = db.meterReadingTestDao().getBy(now.epochSeconds)
 
-        val persisted =
-            db.query("SELECT * FROM meter_reading WHERE read_at = ?", arrayOf(now.epochSeconds))
-
-        Assert.assertTrue(persisted.count == 1)
-        persisted.use {
-            val idx = it.getColumnIndex("meter_index")
-
-            it.moveToNext()
-            Assert.assertEquals(it.getLong(idx), meterIndex.toLong())
-        }
+        Assert.assertNotNull(persisted)
+        Assert.assertEquals(persisted?.meterIndex, meterIndex.toLong())
     }
 }
