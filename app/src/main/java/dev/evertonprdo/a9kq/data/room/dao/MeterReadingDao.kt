@@ -13,7 +13,7 @@ interface MeterReadingDao {
     @Query("SELECT * FROM meter_reading")
     fun getAll(): Flow<List<MeterReading>>
 
-    @Query("SELECT * FROM meter_reading ORDER BY read_at DESC")
+    @Query("SELECT * FROM meter_reading WHERE marked_to_remove_at IS NOT NULL ORDER BY read_at DESC")
     fun getAllByReadAtDesc(): Flow<List<MeterReading>>
 
     @Query("SELECT * FROM meter_reading ORDER BY read_at DESC LIMIT 1")

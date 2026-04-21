@@ -24,12 +24,6 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/*  Meter Reading List Optimistic Remove Strategy
- *
- *  Storing cached pending removals is a way to handle optimistic removal without adding new columns to the database schema.
- *  It may add some unnecessary complexity across architectural layers and introduce unexpected behavior,
- *  but it works well here, as adding a nullable timestamp column (marked_to_remove_at) in the MeterReading entity would also work.
- */
 class MeterReadingListViewModel(
     private val meterReadingHistoryUseCase: MeterReadingHistoryUseCase,
     private val removeMeterReadingUseCase: RemoveMeterReadingUseCase,
