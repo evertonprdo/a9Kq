@@ -59,17 +59,14 @@ fun MeterReadingListScreen(
                     count = 0
                 }
 
-                MeterReadingListEvent.ReadMarkedToRemove -> {
+                MeterReadingListEvent.ReadingRemoved -> {
                     count++
                     job?.cancel()
 
                     job = snackbarDispatcher.showMessage(
                         message = "$count read removed",
                         label = "undo",
-                        onDismiss = {
-                            viewModel.onAction(MeterReadingListAction.DispatchRemovedMeterReadings)
-                            count = 0
-                        },
+                        onDismiss = { count = 0 },
                         onAction = {
                             viewModel.onAction(MeterReadingListAction.UndoRemove)
                             count = 0

@@ -10,5 +10,8 @@ interface MeterReadingRepository {
     suspend fun getMostRecent(): MeterReading?
 
     suspend fun add(read: MeterReading)
-    suspend fun remove(reads: List<Long>)
+    suspend fun remove(keys: List<Long>)
+    suspend fun remove(key: Long)
+
+    suspend fun undoPendingRemoval()
 }
