@@ -31,15 +31,6 @@ interface MeterReadingDao {
         """
             UPDATE meter_reading
             SET marked_to_remove_at = NULL
-            WHERE marked_to_remove_at IS NOT NULL
-        """
-    )
-    suspend fun unmarkToRemoveAll()
-
-    @Query(
-        """
-            UPDATE meter_reading
-            SET marked_to_remove_at = NULL
             WHERE read_at IN (:keys)
         """
     )

@@ -38,12 +38,8 @@ class MeterReadingRepositoryImpl(
     override suspend fun remove(vararg keys: Long) =
         meterReadingDao.markAsRemoved(*keys)
 
-    override suspend fun undoPendingRemoval(vararg keys: Long) {
-        if (keys.isEmpty())
-            meterReadingDao.unmarkToRemoveAll()
-        else
-            meterReadingDao.unmarkToRemove(*keys)
-    }
+    override suspend fun undoPendingRemoval(vararg keys: Long) =
+        meterReadingDao.unmarkToRemove(*keys)
 
     override suspend fun canRestore(vararg keys: Long): Boolean =
         meterReadingDao.isAllEligibleToUnmarkToRemove(*keys)

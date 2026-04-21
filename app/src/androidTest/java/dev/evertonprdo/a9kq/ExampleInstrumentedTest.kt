@@ -1,12 +1,14 @@
 package dev.evertonprdo.a9kq
 
-import androidx.test.platform.app.InstrumentationRegistry
+import android.content.Context
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-
+import dev.evertonprdo.a9kq.data.room.AppDatabase
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -15,10 +17,12 @@ import org.junit.Assert.*
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+
     @Test
-    fun useAppContext() {
-        // Context of the app under test.
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("dev.evertonprdo.a9kq", appContext.packageName)
+    fun useAppContext() = runTest {
+        val appContext = ApplicationProvider.getApplicationContext<Context>()
+
+        val db = Room.inMemoryDatabaseBuilder(appContext, AppDatabase::class.java).build()
+        Assert.assertFalse(db.meterReadingDao().isAllEligibleToUnmarkToRemove(1, 2))
     }
 }
