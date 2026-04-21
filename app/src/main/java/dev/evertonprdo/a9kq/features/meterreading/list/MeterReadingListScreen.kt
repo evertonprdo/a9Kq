@@ -14,7 +14,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -67,7 +66,7 @@ fun MeterReadingListScreen(
                     job = snackbarDispatcher.showMessage(
                         message = "$count read removed",
                         label = "undo",
-                        duration = SnackbarDuration.Short,
+                        // duration = SnackbarDuration.Short,
                         onDismiss = {
                             viewModel.onAction(MeterReadingListAction.DispatchRemovedMeterReadings)
                             count = 0
