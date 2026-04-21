@@ -28,6 +28,15 @@ interface MeterReadingDao {
     @Query("DELETE FROM meter_reading WHERE read_at IN (:keys)")
     suspend fun delete(keys: List<Long>)
 
+    @Query(
+        """
+            UPDATE meter_reading 
+            SET marked_to_remove_at = strftime('%s', 'now')
+            WHERE read_at IN (:keys)
+        """
+    )
+    suspend fun softDelete(keys: List<Long>)
+
     @Query("SELECT EXISTS(SELECT 1 FROM meter_reading WHERE read_at = :readAt)")
     suspend fun exists(readAt: Long): Boolean
 }

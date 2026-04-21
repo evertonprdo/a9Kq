@@ -13,9 +13,6 @@ class MeterReadingRepositoryImpl(
     private val meterReadingMapper: MeterReadingMapper
 ) : MeterReadingRepository {
 
-    override fun getAll(): Flow<List<MeterReading>> =
-        meterReadingDao.getAll().map { meterReadingMapper.toDomain(it) }
-
     override fun getHistory(): Flow<MeterReadingHistory> =
         meterReadingDao.getAllByReadAtDesc().map { meterReadingMapper.toDomain(it) }
 
@@ -25,16 +22,7 @@ class MeterReadingRepositoryImpl(
     override suspend fun add(read: MeterReading) =
         meterReadingDao.insert(meterReadingMapper.fromDomain(read))
 
-    override suspend fun remove(read: MeterReading) =
-        meterReadingDao.delete(meterReadingMapper.fromDomain(read))
-
-    override suspend fun remove(reads: List<Long>) =
-        meterReadingDao.delete(reads)
-
-    override suspend fun exists(read: MeterReading): Boolean =
-        meterReadingDao.exists(meterReadingMapper.fromDomain(read).readAt)
-
-    override suspend fun exists(readAt: Long): Boolean =
-        meterReadingDao.exists(readAt)
-
+    override suspend fun remove(reads: List<Long>) {
+        meterReadingDao.softDelete(reads)
+    }
 }

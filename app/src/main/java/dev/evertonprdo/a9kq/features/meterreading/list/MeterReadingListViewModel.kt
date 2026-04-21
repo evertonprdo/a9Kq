@@ -84,7 +84,6 @@ class MeterReadingListViewModel(
             )
             val removeMeterReadingUseCase = RemoveMeterReadingUseCase(
                 meterReadingRepository = ServiceLocator.meterReadingRepository,
-                pendingMeterReadingsDataStore = ServiceLocator.pendingMeterReadingsDataStore
             )
 
             initializer {
