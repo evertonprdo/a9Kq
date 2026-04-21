@@ -31,6 +31,7 @@ class MeterReadingListViewModel(
     private val _events = Channel<MeterReadingListEvent>()
     val events = _events.receiveAsFlow()
 
+    private val localPendingToRemove = mutableListOf<Long>()
     val uiState: StateFlow<MeterReadingListUiState> = meterReadingHistoryUseCase()
         .map { MeterReadingListUiState.toStandard(it) }
         .catch { emit(MeterReadingListUiState.toFailure(it)) }
@@ -44,18 +45,23 @@ class MeterReadingListViewModel(
         when (action) {
             is MeterReadingListAction.RemoveMeterReading -> remove(action.read)
             MeterReadingListAction.UndoRemove -> undoRemove()
+            MeterReadingListAction.ClearLocalPendingToRemove -> localPendingToRemove.clear()
         }
     }
 
     private fun remove(read: MeterReading) {
+        val key = read.key
+        localPendingToRemove.add(key)
+
         viewModelScope.launch {
-            removeMeterReadingUseCase(read.key)
+            removeMeterReadingUseCase(key)
             _events.send(MeterReadingListEvent.ReadingRemoved)
         }
     }
 
     private fun undoRemove() {
         appScope.launch { undoRemoveMeterReadingUseCase() }
+        localPendingToRemove.clear()
     }
 
     companion object {

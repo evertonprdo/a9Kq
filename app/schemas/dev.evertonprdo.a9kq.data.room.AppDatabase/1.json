@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "953bd0187181f4d7716c0fb13322df77",
+    "identityHash": "7b9440f3eb648e8330eb514b2ac4ed2d",
     "entities": [
       {
         "tableName": "meter_reading",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`read_at` INTEGER NOT NULL, `meter_index` INTEGER NOT NULL, PRIMARY KEY(`read_at`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`read_at` INTEGER NOT NULL, `meter_index` INTEGER NOT NULL, `marked_to_remove_at` INTEGER, PRIMARY KEY(`read_at`))",
         "fields": [
           {
             "fieldPath": "readAt",
@@ -19,6 +19,11 @@
             "columnName": "meter_index",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "markedToRemoveAt",
+            "columnName": "marked_to_remove_at",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -97,7 +102,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '953bd0187181f4d7716c0fb13322df77')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b9440f3eb648e8330eb514b2ac4ed2d')"
     ]
   }
 }

@@ -66,7 +66,10 @@ fun MeterReadingListScreen(
                     job = snackbarDispatcher.showMessage(
                         message = "$count read removed",
                         label = "undo",
-                        onDismiss = { count = 0 },
+                        onDismiss = {
+                            viewModel.onAction(MeterReadingListAction.ClearLocalPendingToRemove)
+                            count = 0
+                        },
                         onAction = {
                             viewModel.onAction(MeterReadingListAction.UndoRemove)
                             count = 0

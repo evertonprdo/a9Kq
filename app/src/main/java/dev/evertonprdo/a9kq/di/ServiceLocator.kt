@@ -2,10 +2,7 @@ package dev.evertonprdo.a9kq.di
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import androidx.room.Room
-import dev.evertonprdo.a9kq.data.datastore.PendingMeterReadingsDataStore
-import dev.evertonprdo.a9kq.data.datastore.dataStore
 import dev.evertonprdo.a9kq.data.old.BillRepository
 import dev.evertonprdo.a9kq.data.old.EnergyDataSource
 import dev.evertonprdo.a9kq.data.old.energyDataSource
@@ -19,8 +16,7 @@ object ServiceLocator {
 
     private lateinit var energyDataSource: DataStore<EnergyDataSource>
     private lateinit var database: AppDatabase
-    private lateinit var dataStore: DataStore<Preferences>
-    
+
     lateinit var appCoroutineScope: AppCoroutineScope
         private set
 
@@ -32,10 +28,6 @@ object ServiceLocator {
     }
     val billRepository: BillRepository by lazy { BillRepository(energyDataSource) }
 
-    val pendingMeterReadingsDataStore: PendingMeterReadingsDataStore by lazy {
-        PendingMeterReadingsDataStore(dataStore)
-    }
-
     fun initialize(context: Context) {
         energyDataSource = context.energyDataSource
 
@@ -44,8 +36,6 @@ object ServiceLocator {
             klass = AppDatabase::class.java,
             name = "app-database"
         ).build()
-
-        dataStore = context.dataStore
 
         appCoroutineScope = AppCoroutineScope()
     }

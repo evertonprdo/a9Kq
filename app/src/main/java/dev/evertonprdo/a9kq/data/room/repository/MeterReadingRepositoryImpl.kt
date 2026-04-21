@@ -16,7 +16,8 @@ class MeterReadingRepositoryImpl(
     init {
         // A very simple way to avoid using WorkManager
         runBlocking {
-            meterReadingDao.deleteAllExpiredMarkedToRemove()
+            runCatching { meterReadingDao.deleteAllExpiredMarkedToRemove() }
+                .onFailure { println("ERROR: ${it.message}") }
         }
         // This is something I could keep if I wanted, except for the blocking call,
         // which should instead be done with coroutineScope.launch
@@ -34,9 +35,16 @@ class MeterReadingRepositoryImpl(
         meterReadingDao.insert(meterReadingMapper.fromDomain(read))
     }
 
-    override suspend fun remove(keys: List<Long>) =
-        meterReadingDao.softDelete(keys)
+    override suspend fun remove(vararg keys: Long) =
+        meterReadingDao.markAsRemoved(*keys)
 
-    override suspend fun undoPendingRemoval() =
-        meterReadingDao.unmarkToRemoveAll()
+    override suspend fun undoPendingRemoval(vararg keys: Long) {
+        if (keys.isEmpty())
+            meterReadingDao.unmarkToRemoveAll()
+        else
+            meterReadingDao.unmarkToRemove(*keys)
+    }
+
+    override suspend fun canRestore(vararg keys: Long): Boolean =
+        meterReadingDao.isAllEligibleToUnmarkToRemove(*keys)
 }

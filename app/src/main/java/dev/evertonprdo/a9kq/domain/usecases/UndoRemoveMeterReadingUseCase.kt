@@ -6,6 +6,10 @@ class UndoRemoveMeterReadingUseCase(
     private val meterReadingRepository: MeterReadingRepository
 ) {
 
-    suspend operator fun invoke() =
-        meterReadingRepository.undoPendingRemoval()
+    suspend operator fun invoke(vararg keys: Long) {
+        if (keys.isEmpty() || meterReadingRepository.canRestore())
+            meterReadingRepository.undoPendingRemoval(*keys)
+        else
+            throw IllegalStateException("Cannot undo remove")
+    }
 }

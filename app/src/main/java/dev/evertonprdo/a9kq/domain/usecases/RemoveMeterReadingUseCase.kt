@@ -6,9 +6,6 @@ class RemoveMeterReadingUseCase(
     private val meterReadingRepository: MeterReadingRepository,
 ) {
 
-    suspend operator fun invoke(keys: List<Long>) =
-        meterReadingRepository.remove(keys)
-
-    suspend operator fun invoke(key: Long) =
-        meterReadingRepository.remove(key)
+    suspend operator fun invoke(vararg keys: Long) =
+        meterReadingRepository.remove(*keys)
 }
