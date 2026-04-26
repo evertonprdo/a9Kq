@@ -9,6 +9,7 @@ value class KWh(val value: Int) : Comparable<KWh> {
     override fun toString(): String = "$value kWh"
 
     override fun compareTo(other: KWh): Int = value.compareTo(other.value)
+    operator fun compareTo(other: Int): Int = value.compareTo(other)
 
     operator fun plus(other: KWh) = KWh(this.value + other.value)
     operator fun minus(other: KWh) = KWh(this.value - other.value)
