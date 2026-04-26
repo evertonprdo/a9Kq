@@ -19,4 +19,6 @@ value class KWh(val value: Int) : Comparable<KWh> {
     operator fun div(scalar: Double) = KWh((this.value / scalar).toInt())
     operator fun times(BRLMoney: BRLMoney) = BRLMoney(this.value * BRLMoney.cents)
     operator fun unaryMinus() = KWh(-value)
+
+    fun toLong(): Long = value.toLong()
 }

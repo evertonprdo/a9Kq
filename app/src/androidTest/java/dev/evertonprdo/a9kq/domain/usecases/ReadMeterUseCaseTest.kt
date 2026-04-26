@@ -1,52 +1,50 @@
 package dev.evertonprdo.a9kq.domain.usecases
 
-import dev.evertonprdo.a9kq._test.DatabaseBuilder
-import dev.evertonprdo.a9kq._test.FixedClock
-import dev.evertonprdo.a9kq._test.TestAppDatabase
-import dev.evertonprdo.a9kq.data.room.mappers.MeterReadingMapper
-import dev.evertonprdo.a9kq.data.room.repository.MeterReadingRepositoryImpl
+import dev.evertonprdo.a9kq._test.FakeClock
+import dev.evertonprdo.a9kq._test.TestWithDatabase
 import dev.evertonprdo.a9kq.libs.KWh
 import kotlinx.coroutines.test.runTest
-import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class ReadMeterUseCaseTest {
+class ReadMeterUseCaseTest : TestWithDatabase() {
 
-    lateinit var db: TestAppDatabase
     lateinit var readMeterUseCase: ReadMeterUseCase
-
-    val clock: FixedClock = FixedClock.Zero
+    val clock: FakeClock = FakeClock.Zero
 
     @Before
     fun setup() {
-        db = DatabaseBuilder.build()
-        val meterReadingRepository = MeterReadingRepositoryImpl(
-            meterReadingDao = db.meterReadingDao(),
-            meterReadingMapper = MeterReadingMapper()
-        )
-
         readMeterUseCase = ReadMeterUseCase(
             meterReadingRepository = meterReadingRepository,
             clock = clock
         )
     }
 
-    @After
-    fun teardown() {
-        db.close()
-    }
-
     @Test
     fun givenPositiveMeterIndex_whenRead_thenPersistWithNowTimestamp() = runTest {
-        val meterIndex = 100
+        val meterIndex = KWh(100)
+        val now = clock.now().epochSeconds
 
-        readMeterUseCase(KWh(meterIndex))
-        val persisted = db.meterReadingTestDao().getBy(0)
+        readMeterUseCase(meterIndex)
 
+        val persisted = db.meterReadingTestDao().getBy(now)
         Assert.assertNotNull(persisted); persisted!!
+
         Assert.assertEquals(persisted.meterIndex, meterIndex.toLong())
-        Assert.assertEquals(persisted.readAt, clock.now().epochSeconds)
+        Assert.assertEquals(persisted.readAt, now)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun givenLowerMeterIndexThanLastRead_whenRead_thenThrowException() = runTest {
+        readMeterUseCase(KWh(50))
+
+        clock.advanceBy(50)
+        readMeterUseCase(KWh(20))
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun givenNegativeMeterIndex_whenRead_thenThrowException() = runTest {
+        readMeterUseCase(KWh(-50))
     }
 }
