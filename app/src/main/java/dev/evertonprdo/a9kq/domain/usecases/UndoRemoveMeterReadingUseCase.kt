@@ -7,7 +7,7 @@ class UndoRemoveMeterReadingUseCase(
 ) {
 
     suspend operator fun invoke(vararg keys: Long) {
-        if (keys.isEmpty() || meterReadingRepository.canRestore())
+        if (keys.isEmpty() || meterReadingRepository.canRestore(*keys))
             meterReadingRepository.undoPendingRemoval(*keys)
         else
             throw IllegalStateException("Cannot undo remove")
