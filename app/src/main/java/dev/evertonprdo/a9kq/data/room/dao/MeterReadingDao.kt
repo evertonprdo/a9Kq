@@ -63,6 +63,8 @@ interface MeterReadingDao {
         grace: Long = DEFAULT_GRACE
     ): Boolean {
         if (keys.isEmpty()) return true
+        val isAll = countEligibleToUnmarkToRemove(*keys, grace) == keys.size
+        println("It's all eligible? $isAll")
         return countEligibleToUnmarkToRemove(*keys, grace) == keys.size
     }
 

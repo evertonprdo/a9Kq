@@ -60,7 +60,9 @@ class MeterReadingListViewModel(
     }
 
     private fun undoRemove() {
-        appScope.launch { undoRemoveMeterReadingUseCase() }
+        val keys = localPendingToRemove.toLongArray()
+        appScope.launch { undoRemoveMeterReadingUseCase(keys = keys) }
+
         localPendingToRemove.clear()
     }
 

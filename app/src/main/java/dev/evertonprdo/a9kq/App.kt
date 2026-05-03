@@ -1,9 +1,11 @@
 package dev.evertonprdo.a9kq
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -14,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -29,15 +32,41 @@ import dev.evertonprdo.a9kq.libs.utils.unfocusOnTap
 @Composable
 fun App() {
 
-    val backStack = rememberSaveable { mutableStateListOf<Any>("/") }
+    val backStack = rememberSaveable { mutableStateListOf<Any>("/records") }
     val focusManager = LocalFocusManager.current
 
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarDispatcher = rememberAppSnackbarDispatcher(snackbarHostState)
 
+    val shouldHideBottomBar = backStack.lastOrNull().toString().endsWith("/add")
+
     ProvideSnackbarDispatcher(snackbarDispatcher) {
         Scaffold(
             snackbarHost = { SnackbarHost(snackbarHostState) },
+            bottomBar = {
+                AnimatedVisibility(!shouldHideBottomBar) {
+                    BottomAppBar(actions = {
+                        IconButton(
+                            onClick = { backStack.clear(); backStack.add("/records") },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.timer),
+                                contentDescription = null
+                            )
+                        }
+                        IconButton(
+                            onClick = { backStack.clear(); backStack.add("/bills") },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.receipt_long),
+                                contentDescription = null,
+                            )
+                        }
+                    })
+                }
+            }
         ) { contentPadding ->
 
             NavDisplay(
@@ -54,15 +83,6 @@ fun App() {
 
             ) { key ->
                 when (key) {
-                    "/" -> NavEntry(key) {
-                        Column(
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Button({ backStack.add("/records") }) { Text("Records ->") }
-                            Button({ backStack.add("/bills") }) { Text("Bills ->") }
-                        }
-                    }
-
                     "/records" -> NavEntry(key) { MeterReadingListScreen({ backStack.add("/record/add") }) }
                     "/record/add" -> NavEntry(key) { AddMeterReadingScreen({ backStack.removeLastOrNull() }) }
                     "/bills" -> NavEntry(key) { BillListScreen { backStack.add("/bill/add") } }

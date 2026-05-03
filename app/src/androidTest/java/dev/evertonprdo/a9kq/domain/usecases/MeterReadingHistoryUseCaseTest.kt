@@ -3,8 +3,6 @@
 package dev.evertonprdo.a9kq.domain.usecases
 
 import dev.evertonprdo.a9kq._test.TestWithDatabase
-import dev.evertonprdo.a9kq.domain.entities.MeterReading
-import dev.evertonprdo.a9kq.libs.KWh
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -12,7 +10,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
-import kotlin.time.Instant
 
 class MeterReadingHistoryUseCaseTest : TestWithDatabase() {
 
@@ -21,12 +18,6 @@ class MeterReadingHistoryUseCaseTest : TestWithDatabase() {
     @Before
     fun setup() {
         meterReadingHistoryUseCase = MeterReadingHistoryUseCase(meterReadingRepository)
-    }
-
-    suspend fun addEntry(n: Int) {
-        meterReadingRepository.add(
-            read = MeterReading(Instant.fromEpochSeconds(n.toLong()), KWh(n))
-        )
     }
 
     @Test
@@ -41,17 +32,17 @@ class MeterReadingHistoryUseCaseTest : TestWithDatabase() {
 
         verifyHistorySize(0)
 
-        addEntry(0)
+        addMeterReadingEntry(0, 0)
         verifyHistorySize(1)
 
-        addEntry(10)
-        addEntry(12)
+        addMeterReadingEntry(10, 1)
+        addMeterReadingEntry(20, 2)
         verifyHistorySize(3)
     }
 
     @Test
     fun historyIsSortedByDescending() = runTest {
-        repeat(10) { addEntry(it) }
+        repeat(10) { addMeterReadingEntry(it.toLong(), it) }
         val history = meterReadingHistoryUseCase().first()
 
         Assert.assertEquals(
